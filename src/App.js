@@ -26,9 +26,14 @@ function Logo() {
 }
 
 function Form() {
+    const [description, setDescription] = useState("");
+    const [quantity, setQuantity] = useState(1)
 
     function handleSubmit(e) {
         e.preventDefault();
+
+        if (!description) return;
+        const newItem = {description, quantity, packed: false, id: Date.now()}
 
 
     }
@@ -36,7 +41,8 @@ function Form() {
     return (
         <form className="add-form" onSubmit={handleSubmit}>
             <h3>What do you nee for your trip?</h3>
-            <select name="" id="">
+            <select name="" id="" value={quantity}
+                    onChange={event => setQuantity(Number(event.target.value))}>
                 {Array.from({length: 20}, (value, index) => index + 1) //Creating an array to loop
                     .map(num => (
                         <option value={num} key={num}>
@@ -44,7 +50,12 @@ function Form() {
                         </option>
                     ))}
             </select>
-            <input type="text" placeholder="Item..."/>
+            <input
+                type="text"
+                placeholder="Item..."
+                value={description}
+                onChange={event => setDescription(event.target.value)}
+            />
 
             <button>Add</button>
         </form>
