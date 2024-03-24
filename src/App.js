@@ -9,24 +9,26 @@ import {useState} from "react";
 function App() {
     const [items, setItems] = useState([]);
 
+
     function handleAddItems(item) {
         setItems(items => [...items, item]);
         //in javascript we cant change the Original array, we have to create a new one
     }
 
     function handleDeleteItem(id) {
-        setItems(items => items.filter(item => item.id !== id))
+        setItems(items => items.filter(item => item.id !== id));
     }
 
     function handleToggleItem(id) {
         setItems(items => items.map(item => item.id === id ? {...item, packed: !item.packed} : {item}))
     }
+
     return (
         <div className="app">
-            <Logo />
+            <Logo/>
             <Form onAddItems={handleAddItems}/>
             <PackingList item={items} onDeleteItem={handleDeleteItem} onToggleItems={handleToggleItem}/>
-            <Stats />
+            <Stats items={items}/>
         </div>
     );
 }
@@ -105,10 +107,29 @@ function Item({item, onDeleteItem, onToggleItem}) {
     );
 }
 
-function Stats() {
+function Stats({items}) {
+
+    if (!items.length){
+        return (
+            <p className="stats">
+                <em>
+                    Start adding items to your packing list
+                </em>
+            </p>
+        )
+    }
+
+    const numItems = items.length;
+    const numPacked = items.filter(item => item.packed).length;
+    const percentage = Math.round((numPacked / numItems) * 100);
+
     return (
         <footer className="stats">
-            <em>💼 You have x items on your list, and you already packed X (X%)</em>
+            <em>
+                {percentage === 100 ? 'You got everything ! Ready to go' :
+                    `💼 You have ${numItems} items on your list,
+                and you already packed ${" "}${ numPacked} (${percentage}%)`}
+            </em>
         </footer>
     );
 }
