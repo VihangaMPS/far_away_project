@@ -1,18 +1,29 @@
 import {useState} from "react";
 
-const initialItems = [
+/*const initialItems = [
     {id: 1, description: "Passports", quantity: 2, packed: false},
     {id: 2, description: "Socks", quantity: 12, packed: true},
     {id: 3, description: "Charger", quantity: 1, packed: false},
-];
+];*/
 
 function App() {
+    const [items, setItems] = useState([]);
+
+    function handleAddItems(item) {
+        setItems(items => [...items, item]);
+        //in javascript we cant change the Original array, we have to create a new one
+    }
+
+    function handleDeleteItem(id) {
+        setItems(items => items.filter(item => item.id !== id))
+    }
+
     return (
         <div className="app">
-            <Logo/>
-            <Form/>
-            <PackingList/>
-            <Stats/>
+            <Logo />
+            <Form onAddItems={handleAddItems}/>
+            <PackingList item={items} onDeleteItem={handleDeleteItem}/>
+            <Stats />
         </div>
     );
 }
@@ -25,23 +36,28 @@ function Logo() {
     );
 }
 
-function Form() {
+function Form({onAddItems}) {
     const [description, setDescription] = useState("");
-    const [quantity, setQuantity] = useState(1)
+    const [quantity, setQuantity] = useState(1);
+
 
     function handleSubmit(e) {
         e.preventDefault();
 
         if (!description) return;
+
         const newItem = {description, quantity, packed: false, id: Date.now()}
 
+        onAddItems(newItem);
 
+        setQuantity(1);
+        setDescription("");
     }
 
     return (
         <form className="add-form" onSubmit={handleSubmit}>
             <h3>What do you nee for your trip?</h3>
-            <select name="" id="" value={quantity}
+            <select name="" id="" value={quantity} // 1-20 drop box field
                     onChange={event => setQuantity(Number(event.target.value))}>
                 {Array.from({length: 20}, (value, index) => index + 1) //Creating an array to loop
                     .map(num => (
@@ -50,7 +66,7 @@ function Form() {
                         </option>
                     ))}
             </select>
-            <input
+            <input // Item Input field
                 type="text"
                 placeholder="Item..."
                 value={description}
@@ -62,25 +78,25 @@ function Form() {
     );
 }
 
-function PackingList() {
+function PackingList({items, onDeleteItem}) {
     return (
         <div className="list">
             <ul>
-                {initialItems.map(item => (
-                    <Item item={item} key={item.id}/>
+                {items.map(item => (
+                    <Item item={item} key={item.id} onDeleteItem={onDeleteItem}/>
                 ))}
             </ul>
         </div>
     );
 }
 
-function Item({item}) {
+function Item({item, onDeleteItem}) {
     return (
         <li>
             <span style={item.packed ? {textDecoration: "line-through"} : {}}>
                 {item.quantity} {item.description}
             </span>
-            <button>❌</button>
+            <button onClick={() => onDeleteItem(item.id)}>❌</button>
         </li>
     );
 }
